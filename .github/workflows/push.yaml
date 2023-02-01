@@ -55,8 +55,8 @@ jobs:
         run: |
           source .venv/bin/activate
           
-          echo "Run stubtest: stubtest cf_extension_core"
-          stubtest cf_extension_core
+          echo "Run stubtest: stubtest ms_graph_client"
+          stubtest ms_graph_client
           
           
           echo "Running mypy"
@@ -67,13 +67,13 @@ jobs:
           flake8 --max-line-length 120 src/ tests/
           
           echo "Running black"
-          black src/ tests/ -l 120 --check
+          black src/ tests/ -l 120 --check --extend-exclude ".*.pyi"
 
       - name: Unit Tests
         run: |
           echo "Running pytest"   
           source .venv/bin/activate
-          pytest  --cov-branch --cov=src/ tests/unit --log-cli-level=DEBUG --junit-xml=junit.xml --cov-report=xml --cov-report=html:ci_coverage/
+          pytest --cov --cov-report html --cov-report xml --log-cli-level=DEBUG --junit-xml=junit.xml tests/unit
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

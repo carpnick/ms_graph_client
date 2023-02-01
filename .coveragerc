@@ -1,0 +1,13 @@
+[run]
+branch = True
+source =
+    src/
+
+[report]
+fail_under = 19
+
+[html]
+directory= ci_coverage/
+
+[xml]
+output = coverage.xml
