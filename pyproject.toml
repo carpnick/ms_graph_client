@@ -1,11 +1,12 @@
 [tool.poetry]
 name = "ms_graph_client"
 # NickC - This will always be out of date.  CI modifies this dynamically
-version = "0.1.4"
+version = "0.1.5"
 description = "Provides a python wrapper around the Microsoft Graph API.  Current SDKs from Microsoft are in Preview mode."
 authors = ["Nick Carpenter"]
 license = "MIT"
 readme = "README.md"
+homepage = "https://github.com/carpnick/ms_graph_client"
 
 include = ["src/ms_graph_client/*.pyi"]
 
