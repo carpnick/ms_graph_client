@@ -227,7 +227,7 @@ if __name__ == "__main__":
         api_url="https://graph.microsoft.com/v1.0",
     )
 
-    # IntegrationTests.run_tests(graphapi_config)
+    IntegrationTests.run_tests(graphapi_config)
 
     cache_reading = GraphCacheAPI(config=graphapi_config)
     user = cache_reading.users.get_user("carpnick2@qkdw.onmicrosoft.com")

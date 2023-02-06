@@ -39,20 +39,20 @@ class Applications(GraphAPICRUDBASE):
         res = self._get(url_part="/applications/" + id)
         return res
 
-    # def list_assignments_to_app(self, app_sp_id):
-    #     assignments = []
-    #
-    #     myresp = self._get(url_part="/servicePrincipals/" + app_sp_id + "/appRoleAssignedTo/")
-    #     for val in myresp["value"]:
-    #         assignments.append(val)
-    #
-    #     js = myresp
-    #     while "@odata.nextLink" in js:
-    #         js = self._get(url_part=js["@odata.nextLink"])
-    #         for temp_member in js["value"]:
-    #             assignments.append(temp_member)
-    #
-    #     return assignments
+    def list_assignments_to_app(self, app_sp_id: str) -> list[Any]:
+        assignments = []
+
+        myresp = self._get(url_part="/servicePrincipals/" + app_sp_id + "/appRoleAssignedTo/")
+        for val in myresp["value"]:
+            assignments.append(val)
+
+        js = myresp
+        while "@odata.nextLink" in js:
+            js = self._get(url_part=js["@odata.nextLink"])
+            for temp_member in js["value"]:
+                assignments.append(temp_member)
+
+        return assignments
 
     def _stabilize_app_assignment(self, app_sp_id: str, group_id: str, should_be_assigned: bool) -> None:
         expected_total_times = 4
@@ -61,6 +61,15 @@ class Applications(GraphAPICRUDBASE):
 
         print(datetime.datetime.now().isoformat() + " - Stabilization Started")
         while True:
+
+            # Really inefficient way of doing it
+            # Replacing with group data instead - group data will be far smaller than app searching.
+            # for val in self.list_assignments_to_app(app_sp_id=app_sp_id):
+            #     if val["principalId"] == principal_id:
+            #         return True
+            #
+            # return False
+
             if self._group_crud.is_group_assigned_to_app(app_service_principal_id=app_sp_id, group_id=group_id):
                 if should_be_assigned:
                     total_times_found += 1

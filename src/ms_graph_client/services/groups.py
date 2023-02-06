@@ -63,12 +63,9 @@ class Groups(GraphAPICRUDBASE):
 
         return False
 
-        # Really inefficient way of doing it
-        # for val in self.list_assignments_to_app(app_sp_id=app_sp_id):
-        #     if val["principalId"] == principal_id:
-        #         return True
-        #
-        # return False
+    def get_by_object_id(self, group_id: str) -> Any:
+        res = self._get(url_part="/groups/" + group_id)
+        return res
 
     def get_by_name(self, group_name: str) -> Any:
         res = self._get(url_part="/groups?$filter=displayName eq '" + group_name + "'")

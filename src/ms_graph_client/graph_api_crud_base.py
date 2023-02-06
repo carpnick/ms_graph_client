@@ -36,8 +36,7 @@ class GraphAPICRUDBASE:
 
     # By default token expires in 3600 seconds - we are renewing 1/2 of the way through
     # Hard coding so we dont have to track time?
-    @cachetools.func.ttl_cache(maxsize=5, ttl=1800)
-    def _token_call(self) -> Any:
+    def _non_cacheable_token_call(self) -> Any:
         """
         https://learn.microsoft.com/en-us/graph/auth-v2-service#4-get-an-access-token
 
@@ -64,8 +63,15 @@ class GraphAPICRUDBASE:
         s.raise_for_status()
         return s.json()
 
+    @cachetools.func.ttl_cache(maxsize=5, ttl=1800)
+    def _token_call(self) -> Any:
+        return self._non_cacheable_token_call()
+
     def _response_has_json(self, response: requests.Response) -> bool:
         return response.headers.get("Content-Type", "").startswith("application/json")
+
+    def validate_credentials(self) -> None:
+        self._non_cacheable_token_call()
 
     def _call(
         self,
