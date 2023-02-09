@@ -251,7 +251,6 @@ if __name__ == "__main__":
     tenant_id = "xxxxxxxx"
     client_secret = "xxxxxxxx"
 
-
     graphapi_config = GraphAPIConfig(
         client_id=client_id,
         tenant_id=tenant_id,
