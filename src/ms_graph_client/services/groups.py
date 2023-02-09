@@ -1,6 +1,6 @@
 import enum
 import typing
-from typing import Any
+from typing import Any, Optional
 
 from ms_graph_client.graph_api_crud_base import GraphAPICRUDBASE
 from ms_graph_client.graph_api_config import GraphAPIConfig
@@ -98,9 +98,44 @@ class Groups(GraphAPICRUDBASE):
         if with_stabilization:
             self._stabilize_group_existence(group_name=group_name, should_exist=False)
 
-    def update(self, group_id: str, group_name: str) -> None:
-        data = {"displayName": group_name}
+    def update(self, group_id: str, group_name: Optional[str] = None, group_description: Optional[str] = None) -> None:
+        data = {}
+
+        if group_description is not None:
+            data.update({"description": group_description})
+
+        if group_name is not None:
+            data.update({"displayName": group_name})
+
         self._patch(url_part="/groups/" + group_id, json=data)
+
+    def list_owners(self, group_id: str) -> list[Any]:
+
+        owners = []
+
+        json = self._get(url_part="/groups/" + group_id + "/owners")
+
+        for temp_owner in json["value"]:
+            owners.append(temp_owner)
+
+        js = json
+
+        while "@odata.nextLink" in js:
+            js = self._get(url_part=js["@odata.nextLink"])
+
+            for temp_owner in js["value"]:
+                owners.append(temp_owner)
+
+        return owners
+
+    def add_owner(self, group_id: str, user_obj_id: str) -> None:
+        from ms_graph_client import Generator
+
+        data = {"@odata.id": Generator(self.config).user_url(user_obj_id=user_obj_id)}
+        self._post(url_part="/groups/" + group_id + "/owners/$ref", json=data)
+
+    def remove_owner(self, group_id: str, user_obj_id: str) -> None:
+        self._delete(url_part="/groups/" + group_id + "/owners/" + user_obj_id + "/$ref")
 
     def _stabilize_group_existence(self, group_name: str, should_exist: bool) -> None:
         expected_total_times = 4
@@ -126,9 +161,17 @@ class Groups(GraphAPICRUDBASE):
 
             time.sleep(sleep_time)
 
+        time.sleep(3)
         print(datetime.datetime.now().isoformat() + " - Stabilization Succeeded")
 
-    def create(self, group_name: str, group_type: GroupType, owners: list[str], with_stabilization: bool) -> str:
+    def create(
+        self,
+        group_name: str,
+        group_description: str,
+        group_type: GroupType,
+        owners: list[str],
+        with_stabilization: bool,
+    ) -> str:
         # Does Group already exist?
         if self.exists_by_name(group_name=group_name):
             raise Exception("Group already exists")
@@ -144,6 +187,7 @@ class Groups(GraphAPICRUDBASE):
 
         data = {
             "displayName": group_name,
+            "description": group_description,
             "mailEnabled": False,
             "mailNickname": str(uuid.uuid4()),
             "securityEnabled": True,
@@ -165,7 +209,7 @@ class Groups(GraphAPICRUDBASE):
         # "/groups/{id}/members"
         members = []
 
-        json = self._get(url_part="/groups/" + group_id + "/members?$top=10")
+        json = self._get(url_part="/groups/" + group_id + "/members")
 
         for temp_member in json["value"]:
             members.append(temp_member)
@@ -211,6 +255,7 @@ class Groups(GraphAPICRUDBASE):
 
             time.sleep(sleep_time)
 
+        time.sleep(3)
         print(datetime.datetime.now().isoformat() + " - Stabilization Succeeded")
 
     def add_member(self, group_id: str, object_id: str, with_stabilization: bool) -> None:

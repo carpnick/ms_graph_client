@@ -87,6 +87,7 @@ class Applications(GraphAPICRUDBASE):
 
             time.sleep(sleep_time)
 
+        time.sleep(3)
         print(datetime.datetime.now().isoformat() + " - Stabilization Succeeded")
 
     def assign_group_to_app(self, app_name: str, group_id: str, with_stabilization: bool, appRole: str = "User") -> Any:

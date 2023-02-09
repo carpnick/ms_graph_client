@@ -8,7 +8,6 @@ from typing import Optional, Any
 class GraphAPICRUDBASE:
     def __init__(self, config: GraphAPIConfig, session: Optional[requests.Session] = None):
         self.config = config
-        self.config.api_url = config.api_url.rstrip("/")
 
         if session is None:
             self.session: requests.Session = self._default_session()
