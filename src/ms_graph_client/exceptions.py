@@ -8,3 +8,7 @@ class NoMatchingGroupError(Exception):
 
 class UnableToFindApplicationError(Exception):
     pass
+
+
+class UnableToFindUserError(Exception):
+    pass

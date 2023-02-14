@@ -108,12 +108,12 @@ class GraphAPICRUDBASE:
             else:
                 return api_response
 
-        except Exception as e:
+        except requests.exceptions.RequestException as e:
             reason = f"Request failed. Reason [{e}]"
             if api_response is not None:
                 if self._response_has_json(api_response):
                     reason += f"\n{api_response.json()}"
-            raise Exception(reason)
+            raise Exception(reason) from e
 
     def _get(
         self, url_part: str, json: Optional[Any] = None, body: Optional[Any] = None, extra_headers: Optional[Any] = None
