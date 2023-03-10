@@ -22,8 +22,8 @@ class Groups:
         return self._crud_client.exists_by_name(group_name=group_name)
 
     @cachetools.func.ttl_cache(ttl=300)
-    def list_group_members(self, group_id: str) -> list[Any]:
-        return self._crud_client.list_group_members(group_id=group_id)
+    def list_group_members(self, group_id: str, recursive: bool = True) -> list[Any]:
+        return self._crud_client.list_group_members(group_id=group_id, recursive=recursive)
 
     @cachetools.func.ttl_cache(ttl=300)
     def is_member_of_group(self, group_id: str, object_id: str) -> bool:
