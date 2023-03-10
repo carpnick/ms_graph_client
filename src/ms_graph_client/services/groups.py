@@ -203,13 +203,15 @@ class Groups(GraphAPICRUDBASE):
 
         return typing.cast(str, group_id)
 
-    def list_group_members(self, group_id: str) -> list[Any]:
+    def list_group_members(self, group_id: str, recursive: bool = True) -> list[Any]:
 
         # List members with pagination
         # "/groups/{id}/members"
         members = []
-
-        json = self._get(url_part="/groups/" + group_id + "/members")
+        if recursive:
+            json = self._get(url_part="/groups/" + group_id + "/transitivemembers")
+        else:
+            json = self._get(url_part="/groups/" + group_id + "/members")
 
         for temp_member in json["value"]:
             members.append(temp_member)
