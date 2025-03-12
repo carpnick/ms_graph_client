@@ -12,3 +12,7 @@ class UnableToFindApplicationError(Exception):
 
 class UnableToFindUserError(Exception):
     pass
+
+
+class UnableToFindManagerError(Exception):
+    pass
